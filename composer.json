@@ -1,0 +1,31 @@
+{
+    "name": "itworks-soft/payum-wayforpay",
+    "type": "library",
+    "description": "The Payum extension. It provides WayForPay payment integration.",
+    "keywords": ["payment", "wayforpay"],
+    "homepage": "https://itworks-soft.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hlib Synkovskyi",
+            "email": "gleb@itworks-soft.com"
+        },
+        {
+            "name": "Kateryna Bohatova",
+            "email": "kateryna@itworks-soft.com"
+        }
+    ],
+    "require": {
+        "payum/core": "^1.5",
+        "wayforpay/php": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
+        "symfony/phpunit-bridge": "^3.1|^4"
+    },
+    "autoload": {
+        "psr-4": {
+			"Payum\\WayForPay\\": "./"
+		}
+    }
+}
