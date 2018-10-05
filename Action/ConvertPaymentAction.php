@@ -1,6 +1,7 @@
 <?php
 namespace Payum\WayForPay\Action;
 
+use App\Entity\Payment\Payment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -23,18 +24,26 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /** @var PaymentInterface $payment */
+        /** @var Payment $payment */
         $payment = $request->getSource();
 
-        $this->gateway->execute($currency = new GetCurrency($payment->getCurrencyCode()));
-        $divisor = pow(10, $currency->exp);
-
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
-        $details['amount'] = $payment->getTotalAmount() / $divisor;
-        $details['invoice_num'] = $payment->getNumber();
-        $details['description'] = $payment->getDescription();
-        $details['email'] = $payment->getClientEmail();
-        $details['cust_id'] = $payment->getClientId();
+        $details['merchantDomainName'] = 'www.apk-inform.com';//$_SERVER['HTTP_HOST'];
+        $details['merchantTransactionSecureType'] = 'AUTO';
+        $details['language'] = 'ru';
+		$details['returnUrl'] = $request->getToken()->getAfterUrl();
+		$details['orderReference'] = $payment->getOrder()->getId() . '-' . $payment->getId();
+		$details['orderDate'] = $payment->getOrder()->getCreatedAt()->getTimestamp();
+        $details['amount'] = $payment->getTotalAmount();
+        $details['currency'] = $payment->getOrder()->getRealCurrency();
+		$details['productName'] = [$payment->getDescription()];
+		$details['productPrice'] = $details['amount'];
+		$details['productCount'] = [1];
+		$details['clientFirstName'] = $payment->getOrder()->getUser()->getFirstName();
+		$details['clientLastName'] = $payment->getOrder()->getUser()->getLastName();
+		$details['clientEmail'] = $payment->getClientEmail();
+		$details['clientPhone'] = $payment->getOrder()->getUser()->getPhone();
+		$details['clientAccountId'] = $payment->getClientEmail();
 
         $request->setResult((array) $details);
     }

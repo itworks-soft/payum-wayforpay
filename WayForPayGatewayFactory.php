@@ -2,6 +2,7 @@
 namespace Payum\WayForPay;
 
 use Payum\WayForPay\Action\CaptureAction;
+use Payum\WayForPay\Action\ConvertPaymentAction;
 use Payum\WayForPay\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
@@ -22,6 +23,7 @@ class WayForPayGatewayFactory extends GatewayFactory
             'payum.factory_title' => 'WayForPay',
             'payum.action.capture' => new CaptureAction(),
             'payum.action.status' => new StatusAction(),
+            'payum.action.convert_payment' => new ConvertPaymentAction(),
         ]);
 
         if (false == $config['payum.api']) {

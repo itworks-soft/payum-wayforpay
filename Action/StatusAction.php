@@ -2,12 +2,21 @@
 namespace Payum\WayForPay\Action;
 
 use Payum\Core\Action\ActionInterface;
+use Payum\Core\ApiAwareInterface;
+use Payum\Core\ApiAwareTrait;
 use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 
-class StatusAction implements ActionInterface
+class StatusAction implements ActionInterface, ApiAwareInterface
 {
+    use ApiAwareTrait;
+
+    public function __construct()
+    {
+        $this->apiClass = \WayForPay::class;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -19,37 +28,29 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (null === $model['response_code']) {
+        if (null === $model['orderReference']) {
             $request->markNew();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::APPROVED == $model['response_code']) {
+        $data = $model->toUnsafeArray();
+
+        $response = $this->api->checkStatus($data);
+
+        if ($response['reasonCode'] == 1100) {
             $request->markCaptured();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::DECLINED == $model['response_code']) {
-            $request->markCanceled();
-
-            return;
-        }
-
-        if (\AuthorizeNetAIM_Response::ERROR == $model['response_code']) {
-            $request->markFailed();
-
-            return;
-        }
-
-        if (\AuthorizeNetAIM_Response::HELD == $model['response_code']) {
+        if ($response['reasonCode'] == 1134) {
             $request->markPending();
 
             return;
         }
 
-        $request->markUnknown();
+        $request->markFailed();
     }
 
     /**
