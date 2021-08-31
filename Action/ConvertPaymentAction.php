@@ -39,10 +39,10 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 		$details['productName'] = [$payment->getDescription()];
 		$details['productPrice'] = $details['amount'];
 		$details['productCount'] = [1];
-		$details['clientFirstName'] = $payment->getOrder()->getUser()->getFirstName();
-		$details['clientLastName'] = $payment->getOrder()->getUser()->getLastName();
+		$details['clientFirstName'] = $payment->getOrder()->getFirstName();
+		$details['clientLastName'] = $payment->getOrder()->getLastName();
 		$details['clientEmail'] = $payment->getClientEmail();
-		$details['clientPhone'] = $payment->getOrder()->getUser()->getPhone();
+		$details['clientPhone'] = $payment->getOrder()->getPhone();
 		$details['clientAccountId'] = $payment->getClientEmail();
 
         $request->setResult((array) $details);
