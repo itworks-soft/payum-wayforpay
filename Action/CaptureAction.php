@@ -1,20 +1,16 @@
 <?php
 namespace Payum\WayForPay\Action;
 
-use function GuzzleHttp\Psr7\parse_query;
+use GuzzleHttp\Psr7\Query;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\LogicException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpPostRedirect;
-use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
-use Payum\Core\Request\ObtainCreditCard;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Security\SensitiveValue;
 
 /**
  * @property \WayForPay $api
@@ -47,7 +43,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, ApiAwareI
         $api = clone $this->api;
         list($url, $fields) = explode('?', $api->generatePurchaseUrl($model->toUnsafeArray()));
         $url = str_replace('/get', '', $url);
-        $fields = parse_query($fields);
+        $fields = Query::parse($fields);
 
         throw new HttpPostRedirect($url, $fields);
     }
